@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Status do Bot - Minecraft</title>
+</head>
+<body>
+  <h1>Status do Bot</h1>
+  <p>Tempo de Atividade: <span id="uptime">Carregando...</span></p>
+  <p>Número de Jogadores no Servidor: <span id="players">Carregando...</span></p>
+
+  <hr>
+
+  <h2>Configuração do Bot</h2>
+  <form id="configForm">
+    <label for="host">IP do Servidor:</label>
+    <input type="text" id="host" name="host" placeholder="Ex: mapatest97.aternos.me" required><br><br>
+
+    <label for="port">Porta:</label>
+    <input type="text" id="port" name="port" placeholder="Ex: 25565" required><br><br>
+
+    <label for="username">Nome do Bot:</label>
+    <input type="text" id="username" name="username" placeholder="Ex: bot_espectador" required><br><br>
+
+    <label for="version">Versão do Minecraft:</label>
+    <input type="text" id="version" name="version" placeholder="Ex: 1.21.4" required><br><br>
+
+    <button type="submit">Atualizar Configurações</button>
+  </form>
+
+  <script>
+    // Função para atualizar o status
+    function updateStatus() {
+      fetch('/status')
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('uptime').textContent = data.uptime;
+          document.getElementById('players').textContent = data.numPlayers;
+        })
+        .catch(error => console.error('Erro ao buscar o status:', error));
+    }
+
+    setInterval(updateStatus, 5000);
+    updateStatus();
+
+    // Envia as novas configurações do bot
+    document.getElementById('configForm').addEventListener('submit', function (event) {
+      event.preventDefault();
+
+      const host = document.getElementById('host').value;
+      const port = document.getElementById('port').value;
+      const username = document.getElementById('username').value;
+      const version = document.getElementById('version').value;
+
+      fetch(`/config?host=${host}&port=${port}&username=${username}&version=${version}`)
+        .then(response => response.json())
+        .then(data => alert(data.message))
+        .catch(error => console.error('Erro ao atualizar as configurações:', error));
+    });
+  </script>
+</body>
+</html>
